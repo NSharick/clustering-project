@@ -146,3 +146,13 @@ def split_by_region(df):
     df2 = df[df['fips']==6059.0]
     df3 = df[df['fips']==6111.0]
     return df1, df2, df3
+
+##############################################################################
+
+#scale the data
+def scale_data(df):
+    scaler = MinMaxScaler()
+    scaler.fit(df)
+    scaled_df = scaler.transform(df)
+    df = pd.DataFrame(scaled_df, columns=df.columns, index=df.index)
+    return df
