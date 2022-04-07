@@ -166,7 +166,7 @@ def lr_model_prep(cluster_df, original_df):
     encode_cols = ['bedbathsqft_cluster', 'latlong_cluster', 'dist_cluster']
     for col in encode_cols:
         dummie_df = pd.get_dummies(cluster_df[col], prefix = cluster_df[col].name, drop_first = True)
-        df = pd.concat([cluster_df, dummie_df], axis=1)
+        cluster_df = pd.concat([cluster_df, dummie_df], axis=1)
     return cluster_df
 
 ###############################################################################
