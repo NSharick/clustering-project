@@ -160,17 +160,14 @@ def scale_data(df):
 #############################################################################
 
 #prep for linear regression modeling
-def lr_model_prep(df):
-    lrmodel_df = df[['bathroomcnt', 'bedroomcnt', 'calculatedbathnbr', 'latitude', 'longitude', 'bedbathsqft_cluster', 'latlong_cluster', 'dist_cluster']]
+def lr_model_prep(cluster_df, original_df):
+    add_cols = original_df[['bedbathsqft_cluster', 'latlong_cluster', 'dist_cluster']]
+    cluster_df = pd.concat([cluster_df, add_cols], axis=1)
     encode_cols = ['bedbathsqft_cluster', 'latlong_cluster', 'dist_cluster']
     for col in encode_cols:
-        dummie_df = pd.get_dummies(lrmodel_df[col], prefix = lrmodel_df[col].name, drop_first = True)
-        lrmodel_df = pd.concat([lrmodel_df, dummie_df], axis=1)
-    scaler = MinMaxScaler()
-    scaler.fit(lrmodel_df)
-    scaled_df = scaler.transform(lrmodel_df)
-    scaled_cols_df = pd.DataFrame(scaled_df, columns=lrmodel_df.columns, index=lrmodel_df.index)
-    return scaled_cols_df
+        dummie_df = pd.get_dummies(cluster_df[col], prefix = cluster_df[col].name, drop_first = True)
+        df = pd.concat([cluster_df, dummie_df], axis=1)
+    return cluster_df
 
 ###############################################################################
 
