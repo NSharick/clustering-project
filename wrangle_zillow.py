@@ -156,3 +156,31 @@ def scale_data(df):
     scaled_df = scaler.transform(df)
     df = pd.DataFrame(scaled_df, columns=df.columns, index=df.index)
     return df
+
+#############################################################################
+
+#prep for linear regression modeling
+def lr_model_prep(df):
+    lrmodel_df = df[['bathroomcnt', 'bedroomcnt', 'calculatedbathnbr', 'latitude', 'longitude', 'bedbathsqft_cluster', 'latlong_cluster', 'dist_cluster']]
+    encode_cols = ['bedbathsqft_cluster', 'latlong_cluster', 'dist_cluster']
+    for col in encode_cols:
+        dummie_df = pd.get_dummies(lrmodel_df[col], prefix = lrmodel_df[col].name, drop_first = True)
+        lrmodel_df = pd.concat([lrmodel_df, dummie_df], axis=1)
+    scaler = MinMaxScaler()
+    scaler.fit(lrmodel_df)
+    scaled_df = scaler.transform(lrmodel_df)
+    scaled_cols_df = pd.DataFrame(scaled_df, columns=lrmodel_df.columns, index=lrmodel_df.index)
+    return scaled_cols_df
+
+###############################################################################
+
+#prep for clustering models
+def cluster_model_prep(df):
+    scale_cols = df[['bathroomcnt', 'bedroomcnt', 'calculatedfinishedsquarefeet', 'latitude', 'longitude', 'dist_lat', 'dist_long']]
+    scaler = MinMaxScaler()
+    scaler.fit(scale_cols)
+    scaled_df = scaler.transform(scale_cols)
+    scaled_cols_df = pd.DataFrame(scaled_df, columns=scale_cols.columns, index=scale_cols.index)
+    return scaled_cols_df
+
+###############################################################################
