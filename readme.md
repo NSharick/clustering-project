@@ -21,7 +21,7 @@
 
 - Question 5: Is the location of the property (longitude) related to the logerror for the property?
 
-### ### Data Dictionary:
+### Data Dictionary:
 
 | Variable | Meaning |
 |----------|---------|
@@ -95,7 +95,7 @@ To reproduce my findings on this project you will need:
 - My recomendation is to attempt to gather more information on the properties in this dataset or to gather updated data that includes new properties within the same regions to continue exploring and for developing and refining predicitive models.
 
 ### Next Steps:
-- If new or upodated data was obtained I would continue to explore the data loking for new relationships between features and between features and the target variable
+- If new or upodated data was obtained I would continue to explore the data looking for new relationships between features and between features and the target variable
 
 - I would continue to develop and refine the predictive models to improve their performance
 
