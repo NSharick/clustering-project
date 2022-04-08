@@ -61,6 +61,8 @@ def acquire_zillow():
 
 #Missing values by column
 def missing_col_values(df):
+    '''this function returns a dataframe that has the count of null values by column
+    '''
     cols_df = pd.DataFrame({'count' : df.isna().sum(), 'percent' : df.isna().mean()})
     return cols_df
 
@@ -68,6 +70,8 @@ def missing_col_values(df):
 
 #missing values by row
 def missing_row_values(df):
+    '''this function returns a dataframe that has the count of null values by row
+    '''
     rows_df = pd.concat([
     df.isna().sum(axis=1).rename('num_cols_missing'),
     df.isna().mean(axis=1).rename('pct_cols_missing'),
@@ -78,6 +82,10 @@ def missing_row_values(df):
 
 #find single unit properties function
 def single_unit_properties(df):
+    '''this function filters the dataframe to include only properties that are
+    single family residences, mobile homes, manufactures homes, and cluster homes 
+    and have a unit count of 1
+    '''
     type_values = [261.0, 263.0, 275.0, 265.0]
     df = df[df.propertylandusetypeid.isin(type_values) == True]
     unit_values = [2.0, 3.0]
@@ -87,12 +95,19 @@ def single_unit_properties(df):
 ##############################################################################
 
 #remove columns you want to drop
-def remove_columns(df, cols_to_remove):  
+def remove_columns(df, cols_to_remove): 
+    '''this function removes identified columns to remove 
+    and is used in the below data_prep function
+    ''' 
     df = df.drop(columns=cols_to_remove)
     return df
 
 #handle missing values by missing value percentage by columns then rows
 def handle_missing_values(df, prop_required_column = .5, prop_required_row = .75):
+    '''this function removes columns with more than 50 percent null values 
+    then removes remaing rows with 75 or more percent null values 
+    and is used in the below prep_data function
+    '''
     threshold = int(round(prop_required_column*len(df.index),0))
     df.dropna(axis=1, thresh=threshold, inplace=True)
     threshold = int(round(prop_required_row*len(df.columns),0))
@@ -101,6 +116,9 @@ def handle_missing_values(df, prop_required_column = .5, prop_required_row = .75
 
 #finish pre prep by dealing with remaining null values
 def data_prep(df, cols_to_remove=[], prop_required_column=.5, prop_required_row=.75):
+    '''this function runs the above remove_columns and handle missing values functions 
+    then fills in missing unit counts with 1 and calculates missing structure values
+    '''
     df = remove_columns(df, cols_to_remove)
     df = handle_missing_values(df, prop_required_column, prop_required_row)
     df['unitcnt'].fillna(1, inplace=True)
@@ -142,6 +160,9 @@ def remove_outliers(df, k, col_list):
 
 #split dataset by region function
 def split_by_region(df):
+    ''' This function splits the original dataframe into three regional dataframes
+     using the fips codes which represent the county where the property is located
+    '''
     df1 = df[df['fips']==6037.0]
     df2 = df[df['fips']==6059.0]
     df3 = df[df['fips']==6111.0]
@@ -151,6 +172,9 @@ def split_by_region(df):
 
 #scale the data
 def scale_data(df):
+    ''' This function takes in a dataframe and returns a dataframe 
+    with the values scaled using a min-max scaler
+    '''
     scaler = MinMaxScaler()
     scaler.fit(df)
     scaled_df = scaler.transform(df)
@@ -161,6 +185,11 @@ def scale_data(df):
 
 #prep for linear regression modeling
 def lr_model_prep(cluster_df, original_df):
+    ''' this function prepares the dataset for modeling with linear regression. 
+    it takes in the two dataframes from the clustering phase and concatinates 
+    the cluster columns to the scaled variable dataframe then it encodes the cluster columns 
+    so all the columns are ready for regression modeling
+    '''
     add_cols = original_df[['bedbathsqft_cluster', 'latlong_cluster', 'dist_cluster']]
     cluster_df = pd.concat([cluster_df, add_cols], axis=1)
     encode_cols = ['bedbathsqft_cluster', 'latlong_cluster', 'dist_cluster']
@@ -173,6 +202,9 @@ def lr_model_prep(cluster_df, original_df):
 
 #prep for clustering models
 def cluster_model_prep(df):
+    '''This function takes in the dataframe and creates a new dataframe containing
+    the feature columns with scaled values so they are ready for clustering
+    '''
     scale_cols = df[['bathroomcnt', 'bedroomcnt', 'calculatedfinishedsquarefeet', 'latitude', 'longitude', 'dist_lat', 'dist_long']]
     scaler = MinMaxScaler()
     scaler.fit(scale_cols)
